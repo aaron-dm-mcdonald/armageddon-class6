@@ -1,7 +1,3 @@
-provider "aws" {
-  alias  = "new_york"
-  region = var.new_york_config.region
-}
 
 module "new_york_network" {
   source = "./modules/network"
@@ -52,4 +48,7 @@ module "new_york_tgw_branch" {
   private_subnet_ids = module.new_york_network.private_subnet_ids
   peer_tgw_id        = module.tgw_hq.tgw_id
   vpc_cidr           = var.new_york_config.vpc_cidr
+
+  # optional
+  # enable_return_route = false
 }

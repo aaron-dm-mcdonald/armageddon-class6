@@ -15,6 +15,7 @@ variable "vpc_cidr" {
 
 variable "public_subnet_cidr" {
   description = "The CIDR blocks for the public subnets"
+  default     = []
   type        = list(string)
 }
 
@@ -28,3 +29,26 @@ variable "tgw_id" {
   type        = string
 }
 
+
+variable "database_subnet_cidr" {
+  description = "Database subnet cidr ranges"
+  default     = []
+  type        = list(string)
+}
+
+
+
+variable "num_public_subnets" {
+  description = "Number of public subnets to create"
+  type        = number
+}
+
+variable "num_private_subnets" {
+  description = "Number of private subnets to create"
+  type        = number
+}
+
+variable "num_database_subnets" {
+  description = "Number of database subnets to create"
+  type        = number
+}

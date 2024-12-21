@@ -14,7 +14,4 @@ resource "aws_vpc" "main" {
 }
 
 
-# output "available-azs" {
-#   value = data.aws_availability_zones.available.names
-# }
 

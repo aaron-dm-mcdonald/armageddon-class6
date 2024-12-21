@@ -1,17 +1,19 @@
-provider "aws" {
-  alias  = "tokyo"
-  region = var.tokyo_config.region
-}
 
 module "tokyo_network" {
   source = "./modules/network"
 
-  region              = var.tokyo_config.region
-  name                = var.tokyo_config.name
-  vpc_cidr            = var.tokyo_config.vpc_cidr
-  public_subnet_cidr  = var.tokyo_config.public_subnet_cidr
-  private_subnet_cidr = var.tokyo_config.private_subnet_cidr
-  tgw_id              = module.tgw_hq.tgw_id
+  region                = var.tokyo_config.region
+  name                  = var.tokyo_config.name
+  vpc_cidr              = var.tokyo_config.vpc_cidr
+  public_subnet_cidr    = var.tokyo_config.public_subnet_cidr
+  private_subnet_cidr   = var.tokyo_config.private_subnet_cidr
+  database_subnet_cidr  = var.tokyo_config.database_subnet_cidr
+  num_public_subnets    = 2
+  num_private_subnets   = 3
+  num_database_subnets  = 1
+  tgw_id                = module.tgw_hq.tgw_id
+  
+  
 }
 
 module "tokyo_frontend" {
@@ -46,3 +48,18 @@ module "tgw_hq" {
   private_subnet_ids = module.tokyo_network.private_subnet_ids
 }
 
+/* resource "aws_db_instance" "default" {
+  provider = aws.tokyo
+
+  allocated_storage    = 10
+  db_name              = "mydb"
+  engine               = "mysql"
+  engine_version       = "8.0"
+  instance_class       = "db.t3.micro"
+  username             = "admin"
+  password             = "foobarbaz"
+  skip_final_snapshot  = true
+  deletion_protection  = false
+  db_subnet_group_name = module.tokyo_network.db_subnet_group_id
+}
+ */

@@ -1,7 +1,3 @@
-provider "aws" {
-  alias  = "norcal"
-  region = var.norcal_config.region
-}
 
 module "norcal_network" {
   source = "./modules/network"

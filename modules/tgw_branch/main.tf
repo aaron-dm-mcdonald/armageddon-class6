@@ -99,14 +99,16 @@ data "aws_ec2_transit_gateway_route_table" "tokyo" {
   }
 
   tags = {
-    Name = "tgw-rtb-tokyo" 
+    Name = "tgw-rtb-tokyo"
   }
 
   # depends_on = [var.peer_tgw_id]
-} 
+}
 
 resource "aws_ec2_transit_gateway_route" "to_other_region" {
-  provider                       = aws.tokyo
+  provider = aws.tokyo
+  count    = var.enable_return_route ? 1 : 0
+
   destination_cidr_block         = var.vpc_cidr
   transit_gateway_route_table_id = data.aws_ec2_transit_gateway_route_table.tokyo.id
   transit_gateway_attachment_id  = aws_ec2_transit_gateway_peering_attachment.tokyo.id
@@ -115,6 +117,6 @@ resource "aws_ec2_transit_gateway_route" "to_other_region" {
   depends_on = [aws_ec2_transit_gateway_peering_attachment.tokyo, aws_ec2_transit_gateway_peering_attachment_accepter.main,
     data.aws_ec2_transit_gateway_peering_attachment.main
   ]
-  
-  
+
+
 }

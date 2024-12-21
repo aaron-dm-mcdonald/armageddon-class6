@@ -1,7 +1,4 @@
-provider "aws" {
-  alias  = "sydney"
-  region = var.sydney_config.region
-}
+
 
 module "sydney_network" {
   source = "./modules/network"

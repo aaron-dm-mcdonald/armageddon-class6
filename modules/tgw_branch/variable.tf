@@ -27,3 +27,9 @@ variable "vpc_cidr" {
   description = "CIDR block for the VPC"
   type        = string
 }
+
+variable "enable_return_route" {
+  description = "Enable or Disable return routes (HQ/Tokyo *to* this region)"
+  type        = bool
+  default     = false
+}

@@ -1,7 +1,4 @@
-provider "aws" {
-  alias  = "sao_paulo"
-  region = var.sao_paulo_config.region
-}
+
 
 module "sao_paulo_network" {
   source = "./modules/network"

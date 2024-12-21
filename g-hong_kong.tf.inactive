@@ -1,7 +1,4 @@
-provider "aws" {
-  alias  = "hong_kong"
-  region = var.hong_kong_config.region
-}
+
 
 module "hong_kong_network" {
   source = "./modules/network"

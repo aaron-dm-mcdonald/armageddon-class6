@@ -1,7 +1,4 @@
-provider "aws" {
-  alias  = "london"
-  region = var.london_config.region
-}
+
 
 module "london_network" {
   source = "./modules/network"

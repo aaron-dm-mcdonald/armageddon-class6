@@ -3,17 +3,17 @@ output "vpc_id" {
 }
 
 output "private_subnet_ids" {
-  value = [
-    aws_subnet.private_1.id,
-    aws_subnet.private_2.id
-  ]
+  value =  aws_subnet.private[*].id 
   description = "List of private subnet IDs"
 }
 
+
 output "public_subnet_ids" {
-  value = [
-    aws_subnet.public_1.id,
-    aws_subnet.public_2.id
-  ]
+  value = aws_subnet.public[*].id 
   description = "List of public subnet IDs"
+}
+
+output "db_subnet_group_id" {
+  value       = var.num_database_subnets > 0 ? aws_db_subnet_group.database[0].name : null
+  description = "The ID of the database subnet group."
 }

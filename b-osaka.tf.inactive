@@ -1,0 +1,35 @@
+
+
+module "osaka_network" {
+  source = "./modules/network"
+
+  region                = var.osaka_config.region
+  name                  = var.osaka_config.name
+  vpc_cidr              = var.osaka_config.vpc_cidr
+  public_subnet_cidr    = var.osaka_config.public_subnet_cidr
+  private_subnet_cidr   = var.osaka_config.private_subnet_cidr
+  tgw_id                = module.osaka_tgw_branch.tgw_id
+  limit_public_subnets  = false
+  enable_database_infra = true
+  database_subnet_cidr  = var.osaka_config.database_subnet_cidr
+  
+}
+
+module "osaka_tgw_branch" {
+  source = "./modules/tgw_branch"
+
+  providers = {
+    aws.default = aws.osaka
+    aws.tokyo   = aws.tokyo
+  }
+
+  region             = var.osaka_config.region
+  name               = var.osaka_config.name
+  vpc_id             = module.osaka_network.vpc_id
+  private_subnet_ids = module.osaka_network.private_subnet_ids
+  peer_tgw_id        = module.tgw_hq.tgw_id
+  vpc_cidr           = var.osaka_config.vpc_cidr
+
+  
+}
+

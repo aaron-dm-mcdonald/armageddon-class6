@@ -11,43 +11,51 @@ variable "backend_config" {
     backend_instance_type = ["t2.micro", "t3.micro"]
     desired_capacity      = 2
     scaling_range         = [1, 3]
-    user_data             = "./scripts/startup.sh"
+    user_data             = "./scripts/metadata.sh"
   }
 }
 
 variable "osaka_config" {
   description = "Configuration for the osaka environment"
   type = object({
-    region              = string
-    name                = string
-    vpc_cidr            = string
-    private_subnet_cidr = list(string)
+    region                = string
+    name                  = string
+    vpc_cidr              = string
+    public_subnet_cidr    = list(string)
+    private_subnet_cidr   = list(string)
+    database_subnet_cidr  = list(string)
+    enable_public_subnets = bool
   })
 
   default = {
-    region              = "ap-northeast-3"
-    name                = "osaka"
-    vpc_cidr            = "10.159.0.0/16"
-    private_subnet_cidr = ["10.159.11.0/24"]
+    region                = "ap-northeast-3"
+    name                  = "osaka"
+    vpc_cidr              = "10.159.0.0/16"
+    public_subnet_cidr    = ["10.159.1.0/24"]
+    private_subnet_cidr   = ["10.159.11.0/24", "10.159.12.0/24", "10.159.13.0/24"]
+    database_subnet_cidr  = ["10.159.100.0/24", "10.159.101.0/24"]
+    enable_public_subnets = false
   }
 }
 
 variable "tokyo_config" {
   description = "Configuration for the tokyo environment"
   type = object({
-    region              = string
-    name                = string
-    vpc_cidr            = string
-    public_subnet_cidr  = list(string)
-    private_subnet_cidr = list(string)
+    region               = string
+    name                 = string
+    vpc_cidr             = string
+    public_subnet_cidr   = list(string)
+    private_subnet_cidr  = list(string)
+    database_subnet_cidr = list(string)
   })
 
   default = {
-    region              = "ap-northeast-1"
-    name                = "tokyo"
-    vpc_cidr            = "10.160.0.0/16"
-    public_subnet_cidr  = ["10.160.1.0/24", "10.160.2.0/24"]
-    private_subnet_cidr = ["10.160.11.0/24", "10.160.21.0/24"]
+    region               = "ap-northeast-1"
+    name                 = "tokyo"
+    vpc_cidr             = "10.160.0.0/16"
+    public_subnet_cidr   = ["10.160.1.0/24", "10.160.2.0/24"]
+    private_subnet_cidr  = ["10.160.11.0/24", "10.160.12.0/24", "10.160.13.0/24"]
+    database_subnet_cidr = ["10.160.100.0/24", "10.160.101.0/24"]
   }
 }
 
