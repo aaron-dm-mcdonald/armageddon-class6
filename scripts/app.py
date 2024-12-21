@@ -1,19 +1,27 @@
 from flask import Flask, jsonify, request, render_template_string
 import requests
-import mysql.connector
+import pymysql
+import os
 
 app = Flask(__name__)
 
 ############### Database Config ###############
 
-# Database connection settings
-dbconfig = {
-    'host': 'your-rds-endpoint',   # Replace with your RDS endpoint
-    'user': 'your-username',       # Replace with your database username
-    'password': 'your-password',   # Replace with your database password
-    'database': 'your-database'    # Replace with your database name
-}
+# MySQL RDS configuration (replace with your RDS endpoint, username, and password)
+DB_HOST = os.environ['DB_HOST']
+DB_USER = os.environ['DB_USER']
+DB_PASSWORD = os.environ['DB_PASSWORD']
+DB_NAME = 'user_db'
 
+# Connect to the database
+def get_db_connection():
+    return pymysql.connect(
+        host=DB_HOST,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME,
+        cursorclass=pymysql.cursors.DictCursor
+    )
 ############### Test Picture ###############
 
 # Route to display the image with some HTML saying "test picture"
@@ -72,23 +80,40 @@ def metadata_instance_name():
     instance_name = get_metadata("tags/instance-name")
     return jsonify({"instance-name": instance_name}), 200
 
-# Route to connect to MySQL RDS database and fetch data from a custom query
-@app.route('/database', methods=['GET'])
-def get_db_data():
-    # SQL query passed as a query parameter
-    query = request.args.get('query')
 
-    # Establish a simple connection to the MySQL database
-    connection = mysql.connector.connect(**dbconfig)
+# DB Endpoints
 
-    # Create a cursor to execute the query
-    cursor = connection.cursor(dictionary=True)
-    cursor.execute(query)  # Execute the query passed via the API call
-    rows = cursor.fetchall()
-    cursor.close()
+# POST endpoint to add a user
+@app.route('/add_user', methods=['POST'])
+def add_user():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify({'error': 'Username and password are required'}), 400
+
+    connection = get_db_connection()
+    with connection.cursor() as cursor:
+        sql = "INSERT INTO users (username, password) VALUES (%s, %s)"
+        cursor.execute(sql, (username, password))
+    connection.commit()
     connection.close()
 
-    return jsonify({"data": rows}), 200
+    return jsonify({'message': 'User added successfully'}), 201
+
+# GET endpoint to retrieve all users
+@app.route('/get_users', methods=['GET'])
+def get_users():
+    connection = get_db_connection()
+    with connection.cursor() as cursor:
+        sql = "SELECT username, password FROM users"
+        cursor.execute(sql)
+        users = cursor.fetchall()
+    connection.close()
+
+    return jsonify({'users': users}), 200
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
