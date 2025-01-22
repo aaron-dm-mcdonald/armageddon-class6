@@ -1,0 +1,88 @@
+resource "aws_wafv2_web_acl" "managed_rule_set" {
+  name  = "web-acl"
+  scope = "REGIONAL"
+
+  default_action {
+    allow {}
+  }
+
+  rule {
+    name     = "AdminProtection"
+    priority = 1
+
+    override_action {
+      count {}
+    }
+
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesAdminProtectionRuleSet"
+        vendor_name = "AWS"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = false
+      metric_name                = "AdminProtection-Metrics"
+      sampled_requests_enabled   = false
+    }
+  }
+
+  rule {
+    name     = "IPReputationList"
+    priority = 2
+
+    override_action {
+      count {}
+    }
+
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesAmazonIpReputationList"
+        vendor_name = "AWS"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = false
+      metric_name                = "IPReputationList-Metrics"
+      sampled_requests_enabled   = false
+    }
+  }
+
+  rule {
+    name     = "CoreRuleSet"
+    priority = 3
+
+    override_action {
+      count {}
+    }
+
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesCommonRuleSet"
+        vendor_name = "AWS"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = false
+      metric_name                = "CoreRuleSet-Metrics"
+      sampled_requests_enabled   = false
+    }
+  }
+
+  visibility_config {
+    cloudwatch_metrics_enabled = true
+    metric_name                = "WebACL-Metrics"
+    sampled_requests_enabled   = true
+  }
+}
+
+
+
+
+resource "aws_wafv2_web_acl_association" "example" {
+  resource_arn = aws_lb.web_app.arn
+  web_acl_arn  = aws_wafv2_web_acl.managed_rule_set.arn
+}

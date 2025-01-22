@@ -8,6 +8,9 @@ module "new_york_network" {
   public_subnet_cidr  = var.new_york_config.public_subnet_cidr
   private_subnet_cidr = var.new_york_config.private_subnet_cidr
   tgw_id              = module.new_york_tgw_branch.tgw_id
+  num_public_subnets   = 2
+  num_private_subnets  = 2
+  num_database_subnets = 0
 }
 
 module "new_york_frontend" {
@@ -31,7 +34,7 @@ module "new_york_backend" {
   backend_instance_type = var.backend_config.backend_instance_type[0]
   desired_capacity      = var.backend_config.desired_capacity
   scaling_range         = var.backend_config.scaling_range
-  user_data             = var.backend_config.user_data
+  user_data             = local.user_data
 }
 
 module "new_york_tgw_branch" {

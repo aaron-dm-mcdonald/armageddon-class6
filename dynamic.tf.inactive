@@ -1,0 +1,92 @@
+variable "branch_offices" {
+  description = "Configuration for all branch offices"
+  type = map(object({
+    region              = string
+    name                = string
+    vpc_cidr            = string
+    public_subnet_cidr  = list(string)
+    private_subnet_cidr = list(string)
+  }))
+  default = {
+    new_york = {
+      region              = "us-east-1"
+      name                = "new-york"
+      vpc_cidr            = "10.161.0.0/16"
+      public_subnet_cidr  = ["10.161.1.0/24", "10.161.2.0/24"]
+      private_subnet_cidr = ["10.161.11.0/24", "10.161.21.0/24"]
+    }
+    sao_paulo = {
+      region              = "sa-east-1"
+      name                = "sao-paulo"
+      vpc_cidr            = "10.162.0.0/16"
+      public_subnet_cidr  = ["10.162.1.0/24", "10.162.2.0/24"]
+      private_subnet_cidr = ["10.162.11.0/24", "10.162.21.0/24"]
+    }
+    # Add additional regions here
+  }
+}
+
+# Network Module
+module "branch_network" {
+  for_each = var.branch_offices
+
+  source = "./modules/network"
+
+  region              = each.value.region
+  name                = each.value.name
+  vpc_cidr            = each.value.vpc_cidr
+  public_subnet_cidr  = each.value.public_subnet_cidr
+  private_subnet_cidr = each.value.private_subnet_cidr
+  tgw_id              = module.tgw_hq.tgw_id
+}
+
+# Frontend Module
+module "branch_frontend" {
+  for_each = var.branch_offices
+
+  source = "./modules/frontend"
+
+  region            = each.value.region
+  name              = each.value.name
+  vpc_id            = module.branch_network[each.key].vpc_id
+  public_subnet_ids = module.branch_network[each.key].public_subnet_ids
+  target_group_arn  = module.branch_backend[each.key].target_group_arn
+}
+
+# Backend Module
+module "branch_backend" {
+  for_each = var.branch_offices
+
+  source = "./modules/backend"
+
+  region                = each.value.region
+  name                  = each.value.name
+  vpc_id                = module.branch_network[each.key].vpc_id
+  private_subnet_ids    = module.branch_network[each.key].private_subnet_ids
+  frontend_sg_id        = module.branch_frontend[each.key].frontend_sg_id
+  backend_instance_type = var.backend_config.backend_instance_type[0]
+  desired_capacity      = var.backend_config.desired_capacity
+  scaling_range         = var.backend_config.scaling_range
+  user_data             = var.backend_config.user_data
+}
+
+# TGW Branch Module
+module "branch_tgw_branch" {
+  for_each = var.branch_offices
+
+  source = "./modules/tgw_branch"
+
+  providers = {
+    aws.default = aws[each.key]
+    aws.tokyo   = aws.tokyo
+  }
+
+  region             = each.value.region
+  name               = each.value.name
+  vpc_id             = module.branch_network[each.key].vpc_id
+  private_subnet_ids = module.branch_network[each.key].private_subnet_ids
+  peer_tgw_id        = module.tgw_hq.tgw_id
+  vpc_cidr           = each.value.vpc_cidr
+
+
+}

@@ -15,6 +15,8 @@ resource "aws_eip" "nat" {
 }
 
 resource "aws_nat_gateway" "main" {
+  count = var.num_public_subnets > 0 ? 1 : 0
+
   allocation_id = aws_eip.nat.id
   subnet_id     = aws_subnet.public[0].id
   tags = {

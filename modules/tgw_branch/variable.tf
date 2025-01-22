@@ -31,5 +31,5 @@ variable "vpc_cidr" {
 variable "enable_return_route" {
   description = "Enable or Disable return routes (HQ/Tokyo *to* this region)"
   type        = bool
-  default     = false
+  default     = true
 }

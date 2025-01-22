@@ -58,7 +58,8 @@ resource "aws_launch_template" "launch_template" {
   image_id               = data.aws_ami.ami.id
   instance_type          = var.backend_instance_type
   vpc_security_group_ids = [aws_security_group.backend_sg.id, aws_security_group.syslog_data.id]
-  user_data              = base64encode(file(var.user_data))
+  # Dynamically generate user_data with environment variables
+  user_data = var.user_data
 
   tags = {
     Name = "${var.name}-instance"

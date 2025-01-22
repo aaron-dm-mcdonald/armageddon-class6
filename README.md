@@ -20,8 +20,13 @@ Armageddon project for class 6.
     - 1-auth.tf
     - 2-main.tf
     - a-tokyo.tf
-    - b-new_york.tf
-    - c-sydney.tf
+    - b-osaka.tf
+    - c-new_york.tf
+    - d-london.tf
+    - e-sao_paulo.tf
+    - f-sydney.tf
+    - g-
+    - h-
     - terraform.tfplan
     - modules/
         - backend/
