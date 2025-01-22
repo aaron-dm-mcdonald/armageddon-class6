@@ -1,0 +1,55 @@
+/* Ensure the container has some padding and centers content */
+.container {
+    width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+/* Form styling */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Styling form inputs and select */
+input, select {
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Button styling */
+button {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* API Metadata link styling */
+footer {
+    margin-top: 20px;
+}
+
+.metadata-link {
+    text-decoration: none;
+    color: #007bff;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.metadata-link:hover {
+    text-decoration: underline;
+}
